@@ -1,4 +1,25 @@
-FROM ubuntu:22.04
-COPY . /app
-RUN make /app
-CMD python /app/app.py
+FROM ruby:3.1.2 
+
+# Install yarn
+# RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o /root/yarn-pubkey.gpg && apt-key add /root/yarn-pubkey.gpg
+# RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
+# RUN apt-get update && apt-get install -y --no-install-recommends nodejs yarn
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs
+
+# Default directory
+ENV INSTALL_PATH /opt/app
+RUN mkdir -p $INSTALL_PATH
+
+# Install gems
+WORKDIR $INSTALL_PATH
+COPY Gemfile Gemfile.lock ./
+RUN rm -rf node_modules vendor
+RUN gem install rails bundler
+RUN bundle install
+RUN apt install
+
+# Start server
+CMD bundle exec unicorn -c config/unicorn.rb
+
+# Start Rails server
+# CMD ["rails", "server", "-b", "0.0.0.0"]
