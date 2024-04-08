@@ -19,7 +19,7 @@ RUN bundle install
 RUN apt install
 
 # Start server
-CMD bundle exec unicorn -c config/unicorn.rb
+# CMD bundle exec unicorn -c config/unicorn.rb
 
 # Start Rails server
-# CMD ["rails", "server", "-b", "0.0.0.0"]
+CMD ["rails", "server"]
